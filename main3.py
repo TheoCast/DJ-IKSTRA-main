@@ -1,5 +1,61 @@
 from lib3 import *
 import sys
+import pandas as pd
+from lib3.classes import grafo
+
+def main(nombre_archivo):
+    archivo = nombre_archivo + ".xlsx" 
+    
+    #leer el archivos
+    try:
+        datos = pd.read_excel(archivo)
+        print("Contenido del archivo:")
+        print(datos)
+
+        #obtener vértices y aristas
+        vertices = set(datos['Origen']) | set(datos['Destino'])
+        aristas = list(zip(datos['Origen'], datos['Destino'], datos['Peso']))
+
+        #matriz
+        print("\nMatriz de Adyacencia Ponderada:")
+        matriz = pd.pivot_table(datos, values='Peso', index='Origen', columns='Destino', fill_value=0)
+        print(matriz)
+
+        #lista de relaciones
+        grafo_test = grafo()
+        for origen, destino, peso in aristas:
+            grafo_test.addArista(origen, destino, peso)
+
+        print("\nLista de Relaciones:")
+        for arista in aristas:
+            print(f"{arista[0]} -> {arista[1]}: Peso {arista[2]}")
+
+        print("\nGrafo:")
+        print(grafo_test)
+
+        origen = 'B'
+        destino = 'H'
+        camino_mas_corto, peso_total = dijkstra(grafo_test, origen, destino)
+
+        #camino más corto y su peso total
+        print(f"\nCamino más corto desde {origen} hasta {destino}:")
+        print(" -> ".join(camino_mas_corto))
+        print(f"Peso total del camino: {peso_total}")
+
+    except FileNotFoundError:
+        print("El archivo especificado no se encontró.")
+
+def dijkstra(grafo, origen, destino):
+    #algoritmo de Dijkstra
+    pass
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        nombre_archivo = input("¿Cuál es el nombre del archivo .xlsx?: ")
+    else:
+        nombre_archivo = sys.argv[1]
+    main(nombre_archivo)
+
 
 diccRel = {}
 
